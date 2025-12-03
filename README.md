@@ -16,8 +16,25 @@
             - [ ] test in-situ
         - [ ] hooray! feature-parity achieved!
 
-- [ ] create an "actions" file which can do multiple things
 - [ ] switch from file-based comments, to sqlite-based comment system
+    - [ ] create a simple sqlite database https://wiki.call-cc.org/eggref/5/sql-de-lite#preparing-a-sql-statement
+    - [ ] implement comments
+
+Design app layout:
+
+```
+pages
+|____index.mu
+|____app
+    |_____models.scm // SQLite functions go here
+    |
+    |_____actions
+    |     |________handle_comments.mu // Each file does CRUD + other stuff
+    |
+    |_____templates
+          |________comments.mu // template functions
+```
+
 - [ ] update my personal node with this
 
 - [ ] integrate recipe search

@@ -27,7 +27,6 @@
                         "")
                     text newline "-" newline)))
 
-;; TODO: FIX THIS
 (define (display-comments comments-dir post-id)
     (let* ((comments-file (conc comments-dir "/" post-id ".txt")))
         (if (file-exists? comments-file)

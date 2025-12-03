@@ -3,9 +3,8 @@
 ### TODO
 - [x] get a basic page with comments working
 - [ ] recreate it in chicken scheme
-    - [ ] links
-    - [ ] basic formatting
-    - [ ] fields
+    - [x] links
+    - [x] fields
     - [ ] submit buttons
     - [ ] improved text styling (check deepseek's suggestions)
     - [ ] load comments from file
@@ -27,4 +26,7 @@
 https://wiki.call-cc.org/chicken-for-python-programmers
 
 `sudo apt-get install chicken-bin`
-chicken-install posix
+
+```
+csi -s ./framework/pages/index.mu 
+```

@@ -1,6 +1,7 @@
 #!/usr/bin/env -S csi -s
 
 (import sql-de-lite)
+(import (chicken string))
 
 (define db-name "comments.sqlite3")
 

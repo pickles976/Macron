@@ -1,122 +1,206 @@
-# README
+# Nomadnet ORM Framework
 
-This is a work in progress library for generating micron pages for [nomadnet](https://github.com/markqvist/NomadNet) in [chicken scheme](https://call-cc.org/).
+A simple, learnable ORM (Object-Relational Mapper) for building Nomadnet applications with SQLite in Chicken Scheme.
 
-![](./images/micron_generator_demo.png)
+## Project Structure
 
-## Project Layout
+```
+workspace/
+├── src/                    # Source code
+│   ├── orm.scm            # CLI tool for table generation
+│   ├── orm-lib.scm        # Runtime ORM library
+│   ├── models.scm         # Model definitions
+│   └── micron-dsl.scm     # Micron markup DSL
+│
+├── pages/                  # Example Nomadnet page
+│   ├── index.mu           # Main page (ORM-powered comments)
+│   └── app/
+│       ├── actions/       # Form handlers
+│       │   └── handle_comment.scm
+│       └── templates/     # Page templates
+│           └── comments.scm
+│
+├── docs/                   # Documentation and examples
+│   ├── README.md          # Complete learning guide
+│   ├── QUICK_START.md     # Quick reference
+│   ├── AUTO_CONSTRUCTORS.md
+│   ├── DB_CONNECTION_EXPLAINED.md
+│   ├── DB_LIST_EXPLAINED.md
+│   ├── PARAMETER_SUMMARY.md
+│   └── *.scm             # Runnable examples
+│
+├── app.db                 # SQLite database
+└── README.md             # This file
+```
+
+## Quick Start
+
+### 1. Generate Database Tables
 
 ```bash
-pages
-|____micron-dsl.scm
-|
-|____index.mu
-|
-|____app
-    |_____models.scm // SQLite functions go here
-    |
-    |_____actions
-    |     |________handle_comments.mu // Each file does CRUD + other stuff
-    |
-    |_____templates
-          |________comments.mu // template functions
+cd workspace
+csi -s src/orm.scm --generate
 ```
 
-## Run Locally
+### 2. Run Example Page
 
-Install chicken scheme
 ```bash
-sudo apt update
-sudo apt-get install chicken-bin
-sudo chicken-install sql-de-lite
-sudo chicken-install srfi-1
-sudo chicken-install srfi-13
-sudo chicken-install srfi-19
+csi -s pages/index.mu
 ```
 
-Run the demo page manually:
+### 3. Try Examples
+
 ```bash
-cd ./framework/pages
-csi -s ./index.mu 
+# Run any example from docs/
+csi -s docs/full-crud-demo.scm
+csi -s docs/test-db-list.scm
 ```
 
-Or just copy the contents of `/framework/pages` to `~/.nomadnetwork/storage/pages`
+## Core API
 
-### Tips
+### Models (src/models.scm)
 
-```
-(db-list (comment 'page-index "blog_post")) ;; returns all comments for that page
-```
+Define your data structures as alists:
 
-#### Learning Scheme
+```scheme
+(define comment-model
+  '((name . comment)
+    (fields . (
+      ((name . id)
+       (type . integer)
+       (primary-key . #t)
+       (autoincrement . #t))
+      ((name . text)
+       (type . text))))))
 
-I chose Scheme for a few reasons.
-1. I saw someone else use Chicken Scheme for making a micron dsl
-2. I have wanted to have a project to learn Scheme
-3. Scheme's syntax of S-expressions is much easier to read and reason about for site generation than something like Python. Think about how readable
-html or jsx is for creating UI. The micron-dsl is similar, except with less nesting due to the non-branching nature of Micron.
-4. Chicken Scheme can compile to C, which means that complicated applications can run on small boards like the Pi Zero. 
-
-However, I realize that most people are probably not familiar with Scheme's syntax. If your goal is just to get a simple site up and running, I recommend just following a few Scheme tutorials to learn the absolute basics of the Syntax, and then copying one of the examples and modifying it to your liking. 
-
-If you would like to implement new or complex functionality. I would recommend the following book on Scheme: [The Schematics of Computation by Manis and Little](https://www.math.purdue.edu/~lucier/schematics-front.pdf). I found it to be much more useful than SICP or "The Little Schemer", which are the books that people usually recommend. The Racket book [How to Design Programs](https://htdp.org/) is also a really good (and free) introduction to Scheme/Lisp languages.
-
-I am a Scheme novice myself, so this codebase will remain simple since I couldn't make it more complicated even if I wanted to.
-
-#### Developer Experience
-
-If using vscode, download the Scheme extension and make sure that .mu files are recognized as scheme:
-`Preferences -> Settings -> type: "files.associations"` and add a mapping from `*.mu` to `scheme`.
-
-Install a scheme language server. 
-```bash
-sudo chicken-install -s apropos chicken-doc srfi-18
-cd `csi -R chicken.platform -p '(chicken-home)'`
-curl http://3e8.org/pub/chicken-doc/chicken-doc-repo.tgz | sudo tar zx
-sudo chicken-install lsp-server
+(define all-models (list comment-model ...))
 ```
 
-Add a scheme lsp extension to vscode. Open the command palette and type `ext install rgherdt.scheme-lsp`
+### Create (INSERT)
 
-### TODO
+```scheme
+(load "src/orm-lib.scm")
 
+(db-open "app.db")
 
+;; Constructors are auto-generated from models!
+(define my-comment
+  (make-comment
+    '((name . "Alice")
+      (page-name . "index")
+      (text . "Hello!"))))
 
-- [ ] see if claude can create a simple ORM
-    - [x] models.scm file
-    - [x] orm --generate (makes file and tables)
-    - [x] insert command
-    - [x] return a list (filter by specific keywords)
-- [ ] create documentation
+(db-save my-comment)
 
-- [ ] implement the rest of micron-dsl
-- [ ] load and convert markdown content into 
-- [ ] separate all the examples out into "docs" or "examples"
-- [ ] compile the custom modules
-- [ ] usage
-    - [ ] multiple pages generated with micron-dsl.scm 
-        - [ ] index (link to repo)
-        - [ ] blog post 0 (explain the basics of chicken scheme)
-        - [ ] blog post 1 (explain how the DSL works)
-        - [ ] blog post 2 (explain the markdown converter)
-        - [ ] blog post 3 (explain how the ORM works)
-    - [ ] orm.scm
-        - [ ] add comment sections to the bottom of each page
-- [ ] get it working in-situ
+(db-close)
+```
 
-example app
-- [ ] get lsp working
+### Read (SELECT)
 
-- [ ] add instructions for users to build and use the custom modules
-- [ ] add some tutorials
+```scheme
+;; Get all
+(db-list 'comment)
 
-https://wiki.call-cc.org/chicken-for-python-programmers
+;; Filter by field
+(db-list 'comment '((page-name . "index")))
 
-- [ ] integrate recipe search
-    - [ ] run hari.recipes locally
-    - [ ] query the API and html
-    - [ ] parse and list
-    - [ ] click on list entry and load HTML
-    - [ ] convert HTML to micron
-- [ ] create epub search
-- [ ] update with learning
+;; Multiple filters (AND)
+(db-list 'comment '((name . "Alice") (page-name . "index")))
+```
+
+### Working with Results
+
+Results are alists - easy to process:
+
+```scheme
+(define comments (db-list 'comment '((page-name . "index"))))
+
+;; Access fields
+(alist-ref 'name (car comments))
+(alist-ref 'text (car comments))
+
+;; Map/filter
+(map (lambda (c) (alist-ref 'text c)) comments)
+(filter (lambda (c) (> (alist-ref 'id c) 5)) comments)
+```
+
+## Features
+
+- ✅ **Automatic table generation** from model definitions
+- ✅ **Auto-generated constructors** - add a model, get `make-<model>` for free
+- ✅ **Simple INSERT** with `db-save`
+- ✅ **Flexible SELECT** with `db-list` and filtering
+- ✅ **SQL injection protection** via parameterized queries
+- ✅ **Thread-safe** database connection management
+- ✅ **Micron DSL** for generating terminal-friendly markup
+
+## Example: Nomadnet Page with Comments
+
+The `pages/` folder contains a fully functional Nomadnet page:
+
+- **index.mu** - Main page that displays comments from database
+- **comments.scm** - Template that queries and renders comments
+- **handle_comment.scm** - Form handler that saves new comments
+
+All powered by the ORM!
+
+## Documentation
+
+See `docs/` for comprehensive guides:
+
+- **README.md** - Complete learning guide with all concepts explained
+- **QUICK_START.md** - API reference and common patterns
+- **AUTO_CONSTRUCTORS.md** - How automatic code generation works
+- **DB_CONNECTION_EXPLAINED.md** - Understanding parameters
+- **DB_LIST_EXPLAINED.md** - SELECT queries in depth
+
+## Learning Examples
+
+The `docs/` folder includes runnable examples:
+
+- `full-crud-demo.scm` - Complete Create + Read workflow
+- `test-db-list.scm` - Comprehensive query tests
+- `nomadnet-page-example.scm` - Page rendering with comments
+- `parameters-explained.scm` - Understanding Scheme parameters
+- `constructor-gen.scm` - Dynamic function generation
+- And more!
+
+## Key Concepts Covered
+
+This project teaches essential Scheme concepts through practical use:
+
+- **Association lists** (alists) - Simple key-value data structures
+- **Parameters** - Thread-safe global state management
+- **Quasiquote & eval** - Metaprogramming and code generation
+- **Variadic functions** - Functions with optional arguments
+- **Higher-order functions** - map, filter, for-each
+- **SQL integration** - Safe database operations
+
+## Design Philosophy
+
+This ORM is intentionally **simple and learnable**:
+
+- No magic - understand what every line does
+- Clear error messages
+- Extensive inline documentation
+- Learning-focused examples
+- Minimal abstractions
+
+Perfect for learning Scheme while building real applications!
+
+## Requirements
+
+- Chicken Scheme 5.x
+- sql-de-lite egg
+- srfi-1, srfi-13, srfi-19
+
+## License
+
+Use freely for your Nomadnet applications!
+
+## Next Steps
+
+1. Read `docs/README.md` for the complete learning guide
+2. Try the examples in `docs/`
+3. Modify `src/models.scm` to add your own models
+4. Build your Nomadnet application!

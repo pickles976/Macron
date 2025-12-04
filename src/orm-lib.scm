@@ -71,8 +71,8 @@
   ;;;
   ;;; This loads models.scm and creates a make-* function for each model
 
-  ;; Load models
-  (load "models.scm")
+  ;; Load models - path relative to where scripts are run from (workspace root)
+  (load "src/models.scm")
 
   ;; Generate constructor for each model
   (for-each

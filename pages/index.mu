@@ -1,9 +1,13 @@
 #!/usr/bin/env -S csi -s
 
-(load "./micron-dsl.scm")
-(load "./app/templates/comments.scm")
+;;; index.mu - Main page using ORM-based comments
 
-(define comments-dir "/home/sebas/Projects/NomadnetTemplates/framework/pages/comments")
+;; Paths relative to workspace root (where this is run from)
+(load "src/micron-dsl.scm")
+(load "pages/app/templates/comments.scm")
+
+;; Configuration
+(define db-path "app.db")
 (define page-name "index")
 
 (define (my-input-field label fieldname size)
@@ -13,16 +17,18 @@
 (print
 
   squiggle newline
-  (center 
-    (bold "Hello! ") 
-    "This is output from " 
-    (italics "micron")) 
+  (center
+    (bold "Hello! ")
+    "This is output from "
+    (italics "micron")
+    " with "
+    (bold "ORM-powered comments"))
   newline squiggle newline
-    
+
   (section "Main")
     (style '(align left))
-"This is a multi-line string. Does Chicken scheme have support for those?
-Huh, I guess it does."
+"This is a demo page showing the new ORM-based comment system.
+Comments are now stored in SQLite and queried efficiently!"
     newline
     (style '(fg "33f"))
     (link "lxmf@exampleaddress" "Link Example")
@@ -30,18 +36,18 @@ Huh, I guess it does."
     newline
 
     (style '(align center)) newline
-    
+
     (subsection "Comments")
-      (display-comments comments-dir page-name)
+      (display-comments db-path page-name)
       newline
-      
+
     (subsection "Leave a Comment")
       (style '(fg "aaa" align left))
       (my-input-field  " Name " "user_name" 16) newline
       (my-input-field  " LXMF Address (optional)" "user_lxmf" 32) newline
       (my-input-field  " Comment " "comment_text" 64) newline
-      
+
       (style '(bg "373"))
       ;; label, link, page name, fields
-      (submit-field "Submit" "/app/actions/handle_comment.scm" "index" "user_name" "user_lxmf" "comment_text")
+      (submit-field "Submit" "/app/actions/handle_comment.scm" page-name "user_name" "user_lxmf" "comment_text")
       (reset-style))

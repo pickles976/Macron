@@ -1,1 +1,0 @@
-#!/usr/bin/env -S csi -s

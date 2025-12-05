@@ -3,8 +3,6 @@
 - [x] improve styles on comments
 - [ ] improve styles on sub-pages
 
-- [ ] tell user to use absolute paths
-
 - [ ] create tar.gz 
 - [ ] deploy to nomadnet
 

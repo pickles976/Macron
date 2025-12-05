@@ -54,7 +54,15 @@
    # Make the main page executable
    chmod +x ~/.nomadnetwork/storage/pages/index.mu
    ```
+
+### Update Paths  
   
+
+
+You will need to update the paths of the app. If you are using relative imports, make sure that you are running `nomadnet` from the proper directory. 
+I personally prefer to use absolute paths.
+    
+    
 ### Generate the database tables  
   
    ```bash

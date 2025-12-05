@@ -24,12 +24,10 @@ Tools for building Nomadnet apps in Chicken Scheme. Includes an ORM, a micron DS
     sudo csc -s micron.scm -J && sudo chicken-install
    ```
 
-   Then use them anywhere:
-   ```scheme
-   (import micron)
-   (import markdown)
-   (import orm)
-   ```
+4. **Update Paths**
+
+You will need to update the paths of the app. If you are using relative imports, make sure that you are running `nomadnet` from the proper directory. 
+I personally prefer to use absolute paths.
 
 ## Building a Project
 

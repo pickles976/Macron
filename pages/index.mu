@@ -8,7 +8,7 @@
 ;; Load settings (running from pages/, so app/ is relative)
 (load "app/settings.scm")
 (load "app/templates/header.scm")
-(load "app/templates/comments.scm")
+(load "app/templates/recent-comments.scm")
 
 ;; Configuration
 (define page-name "index")
@@ -66,14 +66,14 @@
   (md-file->micron "app/markdown/index.md")
   nl
 
-  ;; Comments section
+  ;; Recent Comments section (uses raw SQL - see template for learning example)
   nl
-  (section "Community Discussion")
+  (section "Recent Comments (All Pages)")
   nl
 
     (style '(align left fg "ddd"))
     nl
-    (display-comments (app-db-path) page-name)
+    (display-recent-comments (app-db-path) 10)
     nl
 
   nl

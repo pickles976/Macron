@@ -77,7 +77,7 @@ chicken-install
         - [x] make the database location configurable in settings
         - [x] user needs to point to models file when generating orm
 
-        - [ ] instead of comment template on the main page, show how to write a custom query that lists the most recent 10 comments without using an orm
+        - [x] instead of comment template on the main page, show how to write a custom query that lists the most recent 10 comments without using an orm
         - [ ] blog post 0 (explain the basics of chicken scheme)
         - [ ] blog post 1 (explain how the DSL works)
         - [ ] blog post 2 (explain the markdown converter)

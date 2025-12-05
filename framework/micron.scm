@@ -22,7 +22,7 @@
    ;; Sections & structure
    section subsection subsubsection section-depth divider hr
    ;; Links
-   link link-button
+   link link-button file-link
    ;; Literal/code
    literal code
    ;; Comments
@@ -133,6 +133,11 @@
   "Hyperlink: `[label`url]"
   (let ((link-text (if (null? label) url (apply conc label))))
     (conc "`[" link-text "`" url "]")))
+
+(define (file-link url . label)
+  "Hyperlink: `[label`url]"
+  (let ((link-text (if (null? label) url (apply conc label))))
+    (conc "`[" link-text "`:" url "]")))
 
 ;; ========== LITERAL/CODE BLOCKS ==========
 

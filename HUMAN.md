@@ -66,11 +66,8 @@ chicken-install
 ```
 
 - [ ] only works when launched from ./pages dir
-
-- [ ] update docs
-    - [ ] rewrite README.md
-    - [ ] organize by location
-    - [ ] make sure that they all work
+- [ ] links are broken
+    - [ ] tell claude to handle file links differently
 
 - [ ] get it working in-situ
 - [ ] fix markdown docs

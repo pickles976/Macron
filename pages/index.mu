@@ -10,18 +10,18 @@
 
 ;; ========== DEBUG INFO ==========
 ;; Print debug information to stderr
-(with-output-to-port (current-error-port)
-  (lambda ()
-    (print "=== DEBUG INFO ===")
-    (print "Working Directory: " (current-directory))
-    (print "")
-    (print "Environment Variables:")
-    (for-each
-      (lambda (env-pair)
-        (print "  " (car env-pair) " = " (cdr env-pair)))
-      (get-environment-variables))
-    (print "==================")
-    (print "")))
+; (with-output-to-port (current-error-port)
+;   (lambda ()
+;     (print "=== DEBUG INFO ===")
+;     (print "Working Directory: " (current-directory))
+;     (print "")
+;     (print "Environment Variables:")
+;     (for-each
+;       (lambda (env-pair)
+;         (print "  " (car env-pair) " = " (cdr env-pair)))
+;       (get-environment-variables))
+;     (print "==================")
+;     (print "")))
 
 ;; Load settings (running from pages/, so app/ is relative)
 (load "app/settings.scm")
@@ -64,7 +64,7 @@
     nl nl
 
     (style '(fg "5af"))
-    (link "/file/macron.tar.gz" "Download macron.tar.gz")
+    (file-link "/file/macron.tar.gz" "Download macron.tar.gz")
     (style '(fg "ddd"))
     nl
 
@@ -82,6 +82,21 @@
   (style '(align left))
   nl
   (md-file->micron "app/markdown/index.md")
+  nl
+
+  nl
+  (section "Reference")
+  "Here is some documentation to get you started:"
+  nl
+
+  
+  (bold (file-link "./subpages/chicken-scheme-basics.mu" "Learn the fundamentals of Scheme programming "))
+  nl
+  (bold (file-link "./subpages/micron-dsl.mu" "Generate micron with scheme "))
+  nl
+  (bold (file-link "./subpages/markdown-converter.mu" "Write content efficiently with markdown "))
+  nl
+  (bold (file-link "./subpages/orm.mu" "Build data-driven applications with our simple ORM "))
   nl
 
   ;; Recent Comments section (uses raw SQL - see template for learning example)

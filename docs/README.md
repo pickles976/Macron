@@ -1,313 +1,231 @@
-# ORM Workshop - Learning Summary
+# Macron Documentation
 
-## What We Built
+Complete documentation for building Nomadnet applications with Macron.
 
-A simple ORM (Object-Relational Mapper) that generates SQLite tables from hand-written model definitions.
+## What is Macron?
 
-## Files Created
+Macron is a learning-focused framework for building interactive Nomadnet pages using Chicken Scheme. It provides:
 
-1. **models.scm** - Model definitions using association lists
-2. **orm.scm** - ORM tool for generating database tables
-3. **app.db** - Generated SQLite database
+- **Micron DSL** - Generate micron markup with Scheme functions
+- **Markdown Converter** - Write content in Markdown, render as Micron
+- **Simple ORM** - SQLite database integration with minimal boilerplate
+- **Learning-First** - Designed to teach Scheme concepts through practical use
 
-## Usage
+## Documentation Structure
+
+### [ORM](./orm/)
+Database integration and CRUD operations.
+
+**Key Files:**
+- `README.md` - ORM overview and quick start
+- `01-basic-usage.scm` - Creating and reading data
+- `02-filtering.scm` - Querying with filters
+- `03-raw-sql.scm` - Advanced queries with sql-de-lite
+- `parameters.md` - Understanding Scheme parameters
+- `constructors.md` - How auto-constructors work
+
+**Topics Covered:**
+- Model definition as alists
+- Auto-generated constructors
+- Database operations (CREATE, READ)
+- Filtering and workarounds
+- Raw SQL for complex queries
+
+### [Micron DSL](./micron-dsl/)
+Generate Micron markup programmatically.
+
+**Key Files:**
+- `README.md` - DSL overview and API reference
+- `demo.scm` - Complete feature demonstration
+- `forms-example.scm` - Interactive form building
+- `styling-guide.md` - Advanced styling patterns
+
+**Topics Covered:**
+- Text styling (bold, italic, colors)
+- Links and navigation
+- Forms and user input
+- Layout control
+- Color schemes and patterns
+
+### [Markdown](./markdown/)
+Convert Markdown to Micron on-the-fly.
+
+**Key Files:**
+- `README.md` - Converter overview
+- `example-simple.md` - Basic markdown example
+- `example-blog.md` - Blog post example
+- `converter-demo.scm` - Conversion examples
+
+**Topics Covered:**
+- Supported Markdown syntax
+- String and file conversion
+- Mixing Markdown with Micron DSL
+- Best practices for content management
+
+### [Examples](./examples/)
+Complete working applications.
+
+**Key Files:**
+- `README.md` - Examples overview
+- `complete-page.scm` - All features together
+- `guestbook.scm` - Simple interactive app
+
+**Topics Covered:**
+- Full page structure
+- Database integration
+- Form handling
+- Real-world patterns
+
+## Learning Path
+
+### Beginner
+
+1. **Start with Micron DSL** - Learn basic page generation
+   - Read: `micron-dsl/README.md`
+   - Run: `micron-dsl/demo.scm`
+   - Practice: Create a simple static page
+
+2. **Add Markdown** - Make content easier to write
+   - Read: `markdown/README.md`
+   - Run: `markdown/converter-demo.scm`
+   - Practice: Convert a markdown file to a page
+
+### Intermediate
+
+3. **Understand the ORM** - Add data persistence
+   - Read: `orm/README.md` and `orm/parameters.md`
+   - Run: `orm/01-basic-usage.scm`
+   - Practice: Create a model and save data
+
+4. **Work with Forms** - Add interactivity
+   - Read: `micron-dsl/forms-example.scm`
+   - Study: `pages/app/actions/handle_comment.scm`
+   - Practice: Build a contact form
+
+### Advanced
+
+5. **Build Complete Apps** - Put it all together
+   - Study: `examples/complete-page.scm`
+   - Build: `examples/guestbook.scm`
+   - Create: Your own application
+
+6. **Use Raw SQL** - Handle complex queries
+   - Read: `orm/03-raw-sql.scm`
+   - Study: `pages/app/templates/recent-comments.scm`
+   - Practice: Write advanced queries
+
+## Quick Reference
+
+### File Structure
+
+```
+pages/
+  index.mu                  # Main page
+  subpages/                 # Additional pages
+  app/
+    settings.scm            # Configuration (absolute paths)
+    models.scm              # Database models
+    actions/                # Form handlers
+    templates/              # Reusable components
+    markdown/               # Markdown content files
+
+framework/
+  manage.scm                # Database table generation
+  orm-lib.scm               # ORM runtime
+  micron.scm                # Micron DSL module
+  markdown.scm              # Markdown converter
+```
+
+### Common Commands
 
 ```bash
-# Generate database tables from models
-csi -s orm.scm --generate
+# Generate database tables
+csi -s framework/manage.scm --generate \
+  --db-path /absolute/path/to/app.db \
+  --models-path /absolute/path/to/models.scm
 
-# Show help
-csi -s orm.scm --help
+# Run a page
+cd pages
+csi -s index.mu
+
+# Test an example
+csi -s docs/examples/complete-page.scm
+
+# Check database
+sqlite3 /path/to/app.db
 ```
 
-## Key Scheme Concepts Learned
-
-### 1. Association Lists (alists)
-Simple key-value pairs in Scheme:
-```scheme
-'((name . value) (age . 30))
-```
-
-Access values with `alist-ref`:
-```scheme
-(alist-ref 'name my-alist)  ; Returns: value
-```
-
-### 2. Quoting with `'`
-The quote prevents evaluation, treating code as data:
-```scheme
-'(1 2 3)        ; A list of numbers, not a function call
-(list 1 2 3)    ; Same result, but using the list function
-```
-
-### 3. Let Bindings
-- `let` - create local variables (can't reference each other)
-- `let*` - create local variables (later ones can use earlier ones)
+### Essential Imports
 
 ```scheme
-(let* ((a 5)
-       (b (+ a 1)))  ; b can use a
-  (+ a b))           ; Returns: 11
+(import micron)          ; Micron DSL
+(import markdown)        ; Markdown conversion
+(import orm)             ; Database ORM
+
+;; Chicken Scheme standard library
+(import (chicken file))
+(import (chicken process-context))
+(import (chicken string))
+
+;; SRFI libraries
+(import srfi-1)          ; List operations
+(import srfi-13)         ; String operations
+(import srfi-19)         ; Date/time
+
+;; Direct SQL access
+(import sql-de-lite)
 ```
 
-### 4. Higher-Order Functions
-- `map` - transform each element, returns new list
-- `for-each` - perform side effects, returns nothing
+## Configuration
+
+### Settings (pages/app/settings.scm)
+
+Set absolute paths for database and models:
 
 ```scheme
-(map (lambda (x) (* x 2)) '(1 2 3))  ; Returns: (2 4 6)
-(for-each print '(1 2 3))            ; Prints each, returns nothing
+(define db-path "/home/user/project/pages/app/app.db")
+(define models-path "/home/user/project/pages/app/models.scm")
+
+(define app-db-path (make-parameter db-path))
+(define app-models-path (make-parameter models-path))
 ```
 
-### 5. String Operations
-- `symbol->string` - convert symbol to string
-- `string-upcase` - uppercase a string (from srfi-13)
-- `string-translate` - replace characters
-- `string-intersperse` - join strings with separator
-- `conc` - concatenate values to string
+### Models (pages/app/models.scm)
 
-### 6. Character Literals
-```scheme
-#\a    ; The character 'a'
-#\-    ; The character '-'
-#\_    ; The character '_'
-```
-
-### 7. Command-Line Arguments
-```scheme
-(command-line-arguments)  ; Returns list of args
-(member "--flag" args)    ; Check if flag present
-```
-
-### 8. Working with SQL
-```scheme
-(open-database "file.db")           ; Open connection
-(sql db "SELECT * FROM users")      ; Prepare statement
-(exec prepared-statement)           ; Execute
-(close-database db)                 ; Close connection
-```
-
-## Common Pitfalls We Encountered
-
-### 1. Variable Shadowing
-Using `sql` as both a variable name and function name caused errors.
-
-**Bad:**
-```scheme
-(let ((sql "SELECT..."))
-  (exec (sql db sql)))  ; Confusion!
-```
-
-**Good:**
-```scheme
-(let ((sql-statement "SELECT..."))
-  (exec (sql db sql-statement)))  ; Clear!
-```
-
-### 2. SQL Column Naming
-SQLite doesn't allow hyphens in unquoted column names.
-
-**Bad:** `created-at`
-**Good:** `created_at`
-
-We solved this with `string-translate` to convert hyphens to underscores.
-
-### 3. Module Imports
-Some functions require specific imports:
-- `string-intersperse` → `(chicken string)`
-- `string-upcase` → `srfi-13`
-- `command-line-arguments` → `(chicken process-context)`
-
-## Update: INSERT Operations Complete! ✅
-
-We now have a working API for creating and saving model instances!
-
-### New Files
-
-**orm-lib.scm** - Runtime library with:
-- `make-comment` / `make-post` - Constructor functions
-- `db-open` / `db-close` - Database connection management
-- `db-save` - Save instances to database
-
-**example-usage.scm** - Complete working example
-
-### Usage Example
+Define database schemas as alists:
 
 ```scheme
-(load "orm-lib.scm")
+(define comment-model
+  '((name . comment)
+    (fields . (
+      ((name . id) (type . integer) (primary-key . #t) (autoincrement . #t))
+      ((name . text) (type . text))
+      ((name . author) (type . text) (size . 32))))))
 
-;; Create an instance
-(define my-comment
-  (make-comment
-    '((name . "Alice")
-      (address . "34dba26ea2b9d6ff1b8b55a347f8f083")
-      (page-name . "blog_post")
-      (timestamp . "2025-12-04 16:45")
-      (text . "Great post!"))))
-
-;; Save to database
-(db-open "app.db")
-(db-save my-comment)
-(db-close)
+(define all-models (list comment-model))
 ```
 
-### How It Works
+## Getting Help
 
-**Instance Representation:**
-Instances are alists with a special `__model__` key:
-```scheme
-'((__model__ . comment)
-  (name . "Alice")
-  (text . "Hello"))
-```
+- **Read the code** - Framework files are heavily commented
+- **Run examples** - All examples are runnable and documented
+- **Check subpages** - `pages/subpages/` has interactive guides
+- **Experiment** - The framework is designed for learning by doing
 
-**db-save Process:**
-1. Extracts model name from instance
-2. Loads model definition from models.scm
-3. Generates parameterized INSERT SQL
-4. Executes with proper value binding
-5. Returns the new row ID
+## Philosophy
 
-**Key Functions:**
-- `make-instance` - Creates instance from model name and fields
-- `find-model` - Looks up model definition by name
-- `instance->insert-sql` - Generates INSERT statement
-- `get-instance-values-in-order` - Extracts values in correct order
+Macron prioritizes:
 
-### New Scheme Concepts Learned
+1. **Simplicity** - Easy to understand, minimal magic
+2. **Learning** - Every feature teaches a Scheme concept
+3. **Practicality** - Real applications, not toy examples
+4. **Iteration** - Start simple, add complexity as needed
 
-**Parameters** - Thread-safe global state:
-```scheme
-(define db-connection (make-parameter #f))
-(db-connection (open-database "file.db"))  ; Set
-(db-connection)                            ; Get
-```
+## What's Next?
 
-**apply** - Spread list as function arguments:
-```scheme
-(apply exec stmt '("Alice" "text"))
-; Same as: (exec stmt "Alice" "text")
-```
+- Study the topic that interests you most
+- Run the examples to see them in action
+- Build something small to practice
+- Gradually combine features as you learn
 
-**find** (from srfi-1) - First matching element:
-```scheme
-(find (lambda (x) (> x 5)) '(1 3 7 9))  ; Returns: 7
-```
-
-**unless** - Inverted if without else:
-```scheme
-(unless condition
-  (do-something))
-; Equivalent to: (if (not condition) (do-something))
-```
-
-## Update: Automatic Constructor Generation! ✅
-
-Constructors are now **automatically generated** from models.scm!
-
-### How It Works
-
-When you `(load "orm-lib.scm")`, it:
-1. Loads models.scm
-2. For each model in `all-models`, generates a `make-<model>` function using `eval`
-3. Makes them globally available
-
-### Example
-
-Add to models.scm:
-```scheme
-(define user-model '((name . user) (fields . (...))))
-(define all-models (list post-model comment-model user-model))
-```
-
-No manual code needed - `make-user` automatically exists!
-
-```scheme
-(load "orm-lib.scm")
-(make-user '((username . "alice")))  ; Just works!
-```
-
-### New Scheme Concepts
-
-**Quasiquote (`)** - Template with interpolation:
-```scheme
-`(define (,func-name) ...)  ; Like template strings
-```
-
-**Eval** - Execute code as data:
-```scheme
-(eval '(define x 10))       ; Creates variable x
-(eval `(define ,name 5))    ; Dynamic definition
-```
-
-**Symbol manipulation**:
-```scheme
-(string->symbol "make-user")  ; Creates symbol 'make-user
-(symbol->string 'user)        ; Creates string "user"
-```
-
-## Update: SELECT Operations Complete! ✅
-
-We now have `db-list` for querying data with filters!
-
-### New Function: db-list
-
-```scheme
-;; Get all records
-(db-list 'comment)
-
-;; Filter by field
-(db-list 'comment '((page-name . "blog_post")))
-
-;; Multiple filters (AND)
-(db-list 'comment '((name . "Alice") (page-name . "index")))
-```
-
-### How It Works
-
-**SQL Generation:**
-1. Builds `SELECT * FROM table`
-2. Adds `WHERE field = ? AND field = ?` if filters provided
-3. Uses parameterized queries (safe from SQL injection)
-
-**Row Conversion:**
-1. Fetches rows as lists: `(1 "Alice" "" "blog_post" ...)`
-2. Gets field names from model: `(id name address page-name ...)`
-3. Zips them together: `((id . 1) (name . "Alice") ...)`
-4. Adds `__model__` key: `((__model__ . comment) (id . 1) ...)`
-
-**Example:**
-```scheme
-(db-list 'comment '((page-name . "welcome")))
-; Returns:
-; (((__model__ . comment) (id . 7) (name . "Bob") (text . "Great!"))
-;  ((__model__ . comment) (id . 8) (name . "Charlie") (text . "Thanks!")))
-```
-
-### New Scheme Concepts
-
-**Variadic Functions** - Functions accepting variable arguments:
-```scheme
-(define (db-list model-name . rest)
-  ;; rest captures extra arguments as a list
-  (let ((filters (if (null? rest) '() (car rest))))
-    ...))
-
-;; Can call with or without filters:
-(db-list 'comment)                     ; rest = '()
-(db-list 'comment '((name . "Alice"))) ; rest = '(((name . "Alice")))
-```
-
-**Map with Cons** - Building alists from parallel lists:
-```scheme
-(map cons '(a b c) '(1 2 3))
-; Returns: ((a . 1) (b . 2) (c . 3))
-```
-
-## Next Steps
-
-1. ✅ ~~INSERT operations (create records)~~
-2. ✅ ~~Automatic constructor generation from models.scm~~
-3. ✅ ~~SELECT operations (query records)~~
-4. (Optional) A `define-model` macro for cleaner syntax
-5. (Optional) Helper functions like `db-find-by-id`
+Happy hacking on the mesh! 🚀
